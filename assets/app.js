@@ -18,6 +18,7 @@ const state = {
 const els = {
   hintList: document.getElementById('hintList'),
   answerSelect: document.getElementById('answerSelect'),
+  hintsPanel: document.querySelector('.hints-panel'),
   feedback: document.getElementById('feedback'),
   answeredCount: document.getElementById('answeredCount'),
   correctCount: document.getElementById('correctCount'),
@@ -62,6 +63,20 @@ function setTheme(theme = 'light') {
 function setFeedback(message, type = 'loading') {
   els.feedback.className = `feedback ${type}`.trim();
   els.feedback.textContent = message;
+}
+
+function scrollToHintsPanel() {
+  if (!els.hintsPanel) return;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobileViewport = window.matchMedia('(max-width: 900px)').matches;
+  if (!isMobileViewport) return;
+
+  requestAnimationFrame(() => {
+    els.hintsPanel.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'start'
+    });
+  });
 }
 
 function updateStats() {
@@ -218,6 +233,9 @@ function nextQuestion() {
   renderChoices();
   setFeedback('ヒントを見て、4人の中からスカウトするキャラクター名を選んでください。', 'loading');
   updateStats();
+  if (state.currentIndex === 0) {
+    scrollToHintsPanel();
+  }
 }
 
 function startSession() {
