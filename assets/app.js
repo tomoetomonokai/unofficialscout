@@ -206,7 +206,7 @@ function finishSession() {
   els.hintList.innerHTML = `
     <article class="hint-card">
       <span class="hint-label">Session complete</span>
-      <span class="hint-value">5枚のレターををすべて使い切りました。</span>
+      <span class="hint-value">10枚のレターををすべて使い切りました。</span>
     </article>
   `;
   els.answerSelect.innerHTML = '<option value="">スカウト完了</option>';
