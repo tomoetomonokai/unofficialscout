@@ -1,4 +1,4 @@
-const SESSION_QUESTION_COUNT = 5;
+const SESSION_QUESTION_COUNT = 10;
 
 const state = {
   quizData: [],
