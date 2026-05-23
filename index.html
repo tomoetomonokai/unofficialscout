@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merc Storia Unofficial Character Quiz</title>
+  <meta name="description" content="メルクストーリアのユニットを当てるクイズアプリ。非公式ファンサイト。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./assets/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">メインへスキップ</a>
+
+  <div class="decor decor-a" aria-hidden="true"></div>
+  <div class="decor decor-b" aria-hidden="true"></div>
+  <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+
+  <main id="main" class="shell">
+    <section class="hero panel">
+      <div class="hero-copy">
+        <p class="eyebrow">Merc Storia Unofficial Character Quiz</p>
+        <h1>メルクストーリア 非公式の紹介所</h1>
+        <p class="hero-text">旅の仲間を求めて紹介所にやってきたあなた。しかしレターには肝心の名前が書かれていなかった！ ヒントを頼りに、無事5人の仲間をスカウトしてください。</p>
+        <div class="hero-chips">
+          <span class="chip" id="progressChip">スカウト 0 / 0 人目</span>
+        </div>
+        <div class="hero-actions">
+          <button class="primary-button start-button" id="startBtn" type="button">スカウトを始める</button>
+          <button class="secondary-button" id="restartBtn" type="button">もう一度やり直す</button>
+        </div>
+      </div>
+
+      <aside class="hero-side">
+        <div class="spotlight-card">
+          <p class="spotlight-label">Tips</p>
+          <p class="spotlight-text">ウルトラレアな人をお迎えすると背景が...？</p>
+        </div>
+        <div class="stat-grid" aria-label="セッション成績">
+          <article class="stat-card">
+            <span class="stat-label">スカウト数</span>
+            <strong class="stat-value" id="answeredCount">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">成功数</span>
+            <strong class="stat-value" id="correctCount">0</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-label">成功率</span>
+            <strong class="stat-value" id="accuracyRate">0%</strong>
+          </article>
+        </div>
+      </aside>
+    </section>
+
+    <section class="board">
+      <section class="panel hints-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Hints</p>
+            <h2>ヒント</h2>
+          </div>
+          <span class="hint-step" id="hintStep">0 / 5</span>
+        </div>
+
+        <div class="hint-list" id="hintList" aria-live="polite"></div>
+
+        <div class="action-row">
+          <button class="primary-button" id="addHintBtn" type="button">もっとヒントをもらう</button>
+        </div>
+      </section>
+
+      <aside class="panel answer-panel">
+        <div class="section-heading compact">
+          <div>
+            <p class="eyebrow">Answer</p>
+            <h2>誰をスカウトしますか？</h2>
+          </div>
+        </div>
+
+        <label class="field-label" for="answerSelect">キャラクター名</label>
+        <select id="answerSelect" class="select-input">
+          <option value="">読み込み中...</option>
+        </select>
+
+        <div class="action-stack">
+          <button class="primary-button" id="submitBtn" type="button">スカウトする</button>
+        </div>
+
+        <div class="feedback" id="feedback" role="status" aria-live="polite">クイズを始めると最初の問題を読み込みます。</div>
+
+        <section class="session-results" aria-labelledby="sessionResultsTitle">
+          <div class="session-results-head">
+            <h3 id="sessionResultsTitle">あなたのパーティ</h3>
+            <span class="session-results-count" id="resultCount">0 人</span>
+          </div>
+          <div class="result-list" id="resultList">
+            <article class="result-item idle">
+              <div>
+                <p class="result-name">まだ誰もいません</p>
+                <p class="result-meta">スカウトに挑戦するとここに結果が表示されます。</p>
+              </div>
+            </article>
+          </div>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="site-footer panel" aria-label="著作権表示">
+      <div class="footer-copy">
+        <p class="footer-title">Copyright</p>
+        <p class="footer-text">© 2026 Happy Elements K.K. All rights reserved. / Developed & Powered by はゃゃ</p>
+      </div>
+      <p class="footer-note">当サイトは、Happy Elements株式会社「メルクストーリア – 癒術士と鈴のしらべ -」のキャラクターおよび関連データを利用した <b>非公式ファンサイト／ファンアプリ</b> です。本サイト内で使用しているキャラクター名・各種データ等の無断転載・再配布等を固く禁じます。</p>
+      <p class="footer-note">また、当サイトのプログラムおよびデザイン等（上記コンテンツを除く）の著作権は はゃゃ に帰属し、無断転載・再配布・改変を禁止します。当サイトに関するご意見・不具合報告等は <a href="https://sites.google.com/view/tomoetomonokai/" target="_blank">はゃゃ</a> までお問い合わせください。Happy Elements株式会社へのお問い合わせはご遠慮ください。</p>
+    </footer>
+  </main>
+
+  <!-- GitHub Pages では index.html を公開ルートに置き、assets 配下を相対参照します。 -->
+  <script src="./assets/app.js" defer></script>
+</body>
+</html>
