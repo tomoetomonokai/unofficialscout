@@ -22,34 +22,20 @@
       <div class="hero-copy">
         <p class="eyebrow">Merc Storia Unofficial Character Quiz</p>
         <h1>メルクストーリア 非公式の紹介所</h1>
-        <p class="hero-text">旅の仲間を求めて紹介所を訪れたあなた。しかしレターには肝心の名前が書かれていなかった！ ヒントを頼りに、10連を回して無事仲間をスカウトしてください。</p>
-        <div class="hero-chips">
-          <span class="chip" id="progressChip">スカウト 0 / 0 人目</span>
-        </div>
+        <p class="hero-text">旅の仲間を求めて紹介所を訪れたあなた。しかしスカウトレターには肝心の名前が書かれていなかった！ ヒントを頼りに、無事仲間をスカウトしてください。</p>
         <div class="hero-actions">
-          <button class="primary-button start-button" id="startBtn" type="button">スカウトを始める</button>
+          <button class="primary-button start-button" id="startBtn" type="button">スカウト × 10 を始める</button>
           <button class="secondary-button" id="restartBtn" type="button">もう一度やり直す</button>
         </div>
       </div>
 
       <aside class="hero-side">
+        <div class="utility-row">
+          <button class="help-button" id="helpBtn" type="button" aria-haspopup="dialog" aria-controls="helpModal">ヘルプ</button>
+        </div>
         <div class="spotlight-card">
           <p class="spotlight-label">Tips</p>
           <p class="spotlight-text">ウルトラレアな人をお迎えすると背景が...？</p>
-        </div>
-        <div class="stat-grid" aria-label="セッション成績">
-          <article class="stat-card">
-            <span class="stat-label">スカウト数</span>
-            <strong class="stat-value" id="answeredCount">0</strong>
-          </article>
-          <article class="stat-card">
-            <span class="stat-label">成功数</span>
-            <strong class="stat-value" id="correctCount">0</strong>
-          </article>
-          <article class="stat-card">
-            <span class="stat-label">成功率</span>
-            <strong class="stat-value" id="accuracyRate">0%</strong>
-          </article>
         </div>
       </aside>
     </section>
@@ -61,25 +47,29 @@
             <p class="eyebrow">Hints</p>
             <h2>ヒント</h2>
           </div>
-          <span class="hint-step" id="hintStep">0 / 5</span>
+          <div aria-live="polite" class="section-status">
+            <span class="hint-step" id="hintStep"></span>
+          </div>
         </div>
 
         <div class="hint-list" id="hintList" aria-live="polite"></div>
 
         <div class="action-row">
-          <button class="primary-button" id="addHintBtn" type="button">もっとヒントをもらう</button>
+          <button class="primary-button" id="addHintBtn" type="button">次のヒントをもらう</button>
         </div>
       </section>
 
       <aside class="panel answer-panel">
-        <div class="section-heading compact">
+        <div class="section-heading">
           <div>
             <p class="eyebrow">Answer</p>
-            <h2>誰をスカウトしますか？</h2>
+            <h2>スカウト</h2>
+          </div>
+          <div aria-live="polite" class="section-status">
+            <span class="hint-step progress-step" id="progressChip"></span>
           </div>
         </div>
 
-        <label class="field-label" for="answerSelect">キャラクター名</label>
         <select id="answerSelect" class="select-input">
           <option value="">読み込み中...</option>
         </select>
@@ -88,21 +78,14 @@
           <button class="primary-button" id="submitBtn" type="button">スカウトする</button>
         </div>
 
-        <div class="feedback" id="feedback" role="status" aria-live="polite">クイズを始めると最初の問題を読み込みます。</div>
+        <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
 
         <section class="session-results" aria-labelledby="sessionResultsTitle">
           <div class="session-results-head">
             <h3 id="sessionResultsTitle">あなたのパーティ</h3>
-            <span class="session-results-count" id="resultCount">0 人</span>
+            <span class="session-results-count" id="resultCount"></span>
           </div>
-          <div class="result-list" id="resultList">
-            <article class="result-item idle">
-              <div>
-                <p class="result-name">まだ誰もいません</p>
-                <p class="result-meta">スカウトに挑戦するとここに結果が表示されます。</p>
-              </div>
-            </article>
-          </div>
+          <div class="result-list" id="resultList"></div>
         </section>
       </aside>
     </section>
@@ -116,6 +99,58 @@
       <p class="footer-note">また、当サイトのプログラムおよびデザイン等（上記コンテンツを除く）の著作権は はゃゃ に帰属し、無断転載・再配布・改変を禁止します。当サイトに関するご意見・不具合報告等は <a href="https://sites.google.com/view/tomoetomonokai/" target="_blank">はゃゃ</a> までお問い合わせください。Happy Elements株式会社へのお問い合わせはご遠慮ください。</p>
     </footer>
   </main>
+
+  <div class="modal" id="helpModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal="true"></div>
+    <section class="modal-dialog panel" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Help</p>
+          <h2 id="helpModalTitle">遊び方と更新履歴</h2>
+        </div>
+        <button class="modal-close" id="closeHelpBtn" type="button" aria-label="ヘルプを閉じる">×</button>
+      </div>
+      <div class="modal-body">
+        <section class="modal-section">
+          <h3>遊び方</h3>
+          <ol class="help-list">
+            <li>スカウトレターをわたすキャラクターをヒントをもとに選んで仲間を増やしましょう。</li>
+            <li>「スカウト × 10 を始める」を押すと、最初のキャラクターのヒント3件が表示され、スカウト候補を4人から選べるようになります。</li>
+            <li>「次のヒントをもらう」をクリックすると、最大5段階まで情報を増やせます。</li>
+            <li>正しいキャラクター名を選んで「スカウトする」を押すと、正誤判定後に自動で次のスカウトへ進みます。</li>
+            <li>10人のキャラクターをスカウトできます。スカウト履歴は「あなたのパーティ」欄に追加されていきます。</li>
+            <li>完了後、もう10連する場合は「もう一度やり直す」をクリックしてください。</li>
+            <li>まあひとことで言うと、キャラ当てクイズですね。</li>
+          </ol>
+        </section>
+
+        <section class="modal-section">
+          <h3>Tips</h3>
+          <ol class="help-list">
+            <li>キャラクターはレア度違い、レアメ衣装、課金衣装などすべて別扱いです。</li>
+            <li>（Alt）というのはレア度が同じ別ユニットの区別のためにつけています。</li>
+          </ol>
+        </section>
+
+        <section class="modal-section">
+          <h3>更新履歴</h3>
+          <div class="changelog-list">
+            <article class="changelog-item">
+              <p class="changelog-date">2026.05.24</p>
+              <p class="changelog-text">UIを調整しました。</p>
+              <p class="changelog-text">ボタンクリック時の挙動などを修正しました。</p>
+              <p class="changelog-text">ヘルプを追加し、遊び方と更新履歴をアプリ内で見られるようにしました。</p>
+            </article>
+            <article class="changelog-item">
+              <p class="changelog-date">2026.05.23 v1.0.0</p>
+              <p class="changelog-text">公開しました。</p>
+            </article>
+          </div>
+          <!-- 更新履歴を増やすときは changelog-item を追加してください。 -->
+        </section>
+      </div>
+    </section>
+  </div>
 
   <script src="./assets/app.js" defer></script>
 </body>

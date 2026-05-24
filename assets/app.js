@@ -20,9 +20,6 @@ const els = {
   answerSelect: document.getElementById('answerSelect'),
   hintsPanel: document.querySelector('.hints-panel'),
   feedback: document.getElementById('feedback'),
-  answeredCount: document.getElementById('answeredCount'),
-  correctCount: document.getElementById('correctCount'),
-  accuracyRate: document.getElementById('accuracyRate'),
   progressChip: document.getElementById('progressChip'),
   hintStep: document.getElementById('hintStep'),
   addHintBtn: document.getElementById('addHintBtn'),
@@ -31,6 +28,9 @@ const els = {
   resultCount: document.getElementById('resultCount'),
   startBtn: document.getElementById('startBtn'),
   restartBtn: document.getElementById('restartBtn'),
+  helpBtn: document.getElementById('helpBtn'),
+  closeHelpBtn: document.getElementById('closeHelpBtn'),
+  helpModal: document.getElementById('helpModal'),
   confettiLayer: document.getElementById('confettiLayer')
 };
 
@@ -60,9 +60,35 @@ function setTheme(theme = 'light') {
   document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
 }
 
-function setFeedback(message, type = 'loading') {
+function openHelpModal() {
+  els.helpModal.classList.add('is-open');
+  els.helpModal.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('modal-open');
+  els.closeHelpBtn.focus();
+}
+
+function closeHelpModal() {
+  els.helpModal.classList.remove('is-open');
+  els.helpModal.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
+}
+
+function getSessionTotal() {
+  return Math.min(state.quizData.length, SESSION_QUESTION_COUNT);
+}
+
+function getHintTotal() {
+  return state.currentQuestion?.hintGroups?.length ?? 0;
+}
+
+function getAccuracy() {
+  return state.answered === 0 ? 0 : Math.round((state.correct / state.answered) * 1000) / 10;
+}
+
+function setFeedback(message, type = 'loading', includeAccuracy = false) {
+  const suffix = includeAccuracy && state.answered > 0 ? `\n正答率: ${getAccuracy()}%` : '';
   els.feedback.className = `feedback ${type}`.trim();
-  els.feedback.textContent = message;
+  els.feedback.textContent = `${message}${suffix}`;
 }
 
 function scrollToHintsPanel() {
@@ -80,15 +106,13 @@ function scrollToHintsPanel() {
 }
 
 function updateStats() {
-  const total = Math.min(state.quizData.length, SESSION_QUESTION_COUNT);
+  const total = getSessionTotal();
   const shown = state.hasStarted && total > 0 ? Math.min(state.currentIndex + 1, total) : 0;
-  const accuracy = state.answered === 0 ? 0 : Math.round((state.correct / state.answered) * 1000) / 10;
+  const hintTotal = getHintTotal();
+  const revealed = state.currentQuestion ? Math.min(state.revealedGroups, hintTotal) : 0;
 
-  els.answeredCount.textContent = String(state.answered);
-  els.correctCount.textContent = String(state.correct);
-  els.accuracyRate.textContent = `${accuracy}%`;
-  els.progressChip.textContent = state.hasStarted ? `スカウト ${shown} / ${total} 人目` : 'お姉さん待機中...';
-  els.hintStep.textContent = `${state.revealedGroups} / 5`;
+  els.progressChip.textContent = `${shown} / ${total} 連目`;
+  els.hintStep.textContent = `${revealed} / ${hintTotal} ステップ`;
 }
 
 function renderIdleHints(message) {
@@ -101,13 +125,13 @@ function renderIdleHints(message) {
 }
 
 function resetAnswerArea(message) {
-  els.answerSelect.innerHTML = '<option value="">スカウトレター使用前</option>';
+  els.answerSelect.innerHTML = '<option value="" style="text-align-last: center">------------------</option>';
   els.answerSelect.disabled = true;
   els.submitBtn.disabled = true;
   setFeedback(message, 'loading');
 }
 
-function enterStartScreen(message = 'スカウトを始めると最初の問題を読み込みます。') {
+function enterStartScreen(message) {
   clearTimeout(state.nextTimer);
   state.currentIndex = -1;
   state.currentQuestion = null;
@@ -133,7 +157,7 @@ function renderResults() {
     els.resultList.innerHTML = `
       <article class="result-item idle">
         <div>
-          <p class="result-name">まだ誰もいません</p>
+          <p class="result-name">まだ仲間はいません</p>
           <p class="result-meta">スカウトに挑戦するとここに結果が表示されます。</p>
         </div>
       </article>
@@ -146,7 +170,7 @@ function renderResults() {
       <div>
         <p class="result-name">${escapeHtml(result.answerName)}</p>
       </div>
-      <span class="result-badge ${result.isCorrect ? 'correct' : 'incorrect'}">${result.isCorrect ? '正解' : '不正解'}</span>
+      <span class="result-badge ${result.isCorrect ? 'correct' : 'incorrect'}">${result.isCorrect ? '成功' : '失敗'}</span>
     </article>
   `).join('');
 }
@@ -163,7 +187,7 @@ function renderHints() {
       <span class="hint-value">${escapeHtml(hint.value)}</span>
     </article>
   `).join('');
-  els.addHintBtn.disabled = state.locked || state.revealedGroups >= 5;
+  els.addHintBtn.disabled = state.locked || state.revealedGroups >= getHintTotal();
   updateStats();
 }
 
@@ -174,7 +198,7 @@ function buildChoices(question) {
 
 function renderChoices() {
   const choices = buildChoices(state.currentQuestion);
-  els.answerSelect.innerHTML = '<option value="">選択してください</option>' + choices.map((key) => `
+  els.answerSelect.innerHTML = '<option value="">キャラクター名を選択してください</option>' + choices.map((key) => `
     <option value="${key}">${escapeHtml(state.nameMap[key] || key)}</option>
   `).join('');
   els.answerSelect.disabled = false;
@@ -205,15 +229,15 @@ function finishSession() {
   state.locked = true;
   els.hintList.innerHTML = `
     <article class="hint-card">
-      <span class="hint-label">Session complete</span>
-      <span class="hint-value">10枚のレターををすべて使い切りました。</span>
+      <span class="hint-label">Scout Complete!</span>
+      <span class="hint-value">${SESSION_QUESTION_COUNT}枚のレターをすべて使い切りました。</span>
     </article>
   `;
-  els.answerSelect.innerHTML = '<option value="">スカウト完了</option>';
+  els.answerSelect.innerHTML = '<option value="" style="text-align-last: center">------------------</option>';
   els.answerSelect.disabled = true;
   els.submitBtn.disabled = true;
   els.addHintBtn.disabled = true;
-  setFeedback('スカウト完了です。もう一度挑戦するときは「もう一度やり直す」をクリックしてください。', 'done');
+  setFeedback('スカウト完了です。もう一度挑戦するときは「もう一度やり直す」をクリックしてください。', 'done', true);
   updateStats();
 }
 
@@ -231,7 +255,7 @@ function nextQuestion() {
   applyQuestionTheme(state.currentQuestion);
   renderHints();
   renderChoices();
-  setFeedback('ヒントを見て、4人の中からスカウトするキャラクター名を選んでください。', 'loading');
+  setFeedback('ヒントを参考に、4人の中からスカウトするキャラクターを選んでください。', 'loading');
   updateStats();
   if (state.currentIndex === 0) {
     scrollToHintsPanel();
@@ -239,7 +263,7 @@ function nextQuestion() {
 }
 
 function startSession() {
-  if (state.quizData.length === 0) return;
+  if (state.quizData.length === 0 || state.hasStarted) return;
   clearTimeout(state.nextTimer);
   state.hasStarted = true;
   state.sessionOrder = shuffle(state.quizData.map((_, index) => index)).slice(0, Math.min(state.quizData.length, SESSION_QUESTION_COUNT));
@@ -248,12 +272,16 @@ function startSession() {
   state.revealedGroups = 0;
   state.answered = 0;
   state.correct = 0;
+  state.results = [];
   state.locked = true;
+  els.startBtn.disabled = true;
+  renderResults();
+  updateStats();
   nextQuestion();
 }
 
 function addHint() {
-  if (state.locked || !state.currentQuestion || state.revealedGroups >= 5) return;
+  if (state.locked || !state.currentQuestion || state.revealedGroups >= getHintTotal()) return;
   state.revealedGroups += 1;
   renderHints();
 }
@@ -283,10 +311,10 @@ function submitAnswer() {
 
   if (isCorrect) {
     state.correct += 1;
-    setFeedback(`正解です！ ${answerName}をスカウトに成功しました。`, 'success');
+    setFeedback(`正解です！ ${answerName}をスカウトに成功しました。`, 'success', true);
     triggerConfetti();
   } else {
-    setFeedback(`残念！ 不正解です。正解は ${answerName} でした。`, 'error');
+    setFeedback(`残念！ 不正解です。正解は ${answerName} でした。`, 'error', true);
   }
 
   state.results.unshift({
@@ -317,6 +345,18 @@ function bindEvents() {
   els.restartBtn.addEventListener('click', () => {
     enterStartScreen('スカウト開始画面に戻りました。「スカウトを始める」をクリックしてください。');
   });
+  els.helpBtn.addEventListener('click', openHelpModal);
+  els.closeHelpBtn.addEventListener('click', closeHelpModal);
+  els.helpModal.addEventListener('click', (event) => {
+    if (event.target.dataset.closeModal === 'true') {
+      closeHelpModal();
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && els.helpModal.classList.contains('is-open')) {
+      closeHelpModal();
+    }
+  });
 }
 
 async function init() {
@@ -327,7 +367,7 @@ async function init() {
 
   try {
     await loadQuizData();
-    enterStartScreen('スカウトを始めると最初のヒントを読み込みます。');
+    enterStartScreen('スカウトを始めると4人の候補者を読み込みます。');
   } catch (error) {
     console.error(error);
     els.startBtn.disabled = true;
