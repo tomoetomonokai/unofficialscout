@@ -26,13 +26,11 @@
         <div class="hero-actions">
           <button class="primary-button start-button" id="startBtn" type="button">スカウト × 10 を始める</button>
           <button class="secondary-button" id="restartBtn" type="button">もう一度やり直す</button>
+          <button class="help-button" id="helpBtn" type="button" aria-haspopup="dialog" aria-controls="helpModal">ヘルプ</button>
         </div>
       </div>
 
       <aside class="hero-side">
-        <div class="utility-row">
-          <button class="help-button" id="helpBtn" type="button" aria-haspopup="dialog" aria-controls="helpModal">ヘルプ</button>
-        </div>
         <div class="spotlight-card">
           <p class="spotlight-label">Tips</p>
           <p class="spotlight-text">ウルトラレアな人をお迎えすると背景が...？</p>
@@ -125,24 +123,34 @@
         </section>
 
         <section class="modal-section">
-          <h3>Tips</h3>
-          <ol class="help-list">
-            <li>キャラクターはレア度違い、レアメ衣装、課金衣装などすべて別扱いです。</li>
-            <li>（Alt）というのはレア度が同じ別ユニットの区別のためにつけています。</li>
-          </ol>
+          <h3>ユニット差分表示について</h3>
+          <ul class="help-list">
+            <li>⭐アナザースカウトユニット</li>
+            <li>💎ダイヤ購入特典ユニットスタイル</li>
+            <li>🏅トーナメント報酬ユニットスタイル</li>
+            <li>🗳️人気投票ユニットスタイル</li>
+            <li>💰レアメダル交換アイテム</li>
+            <li style="list-style: none">※ アニムスやハグルマのように別キャラクターの場合はレアメ等でも差分記号はついていません。</li>
+            <li style="list-style: none">※ ジュディスやレテネーブルのように差分が複数ある子もいますが、気合で答えてください()</li>
+          </ul>
         </section>
 
         <section class="modal-section">
           <h3>更新履歴</h3>
           <div class="changelog-list">
             <article class="changelog-item">
-              <p class="changelog-date">2026.05.24</p>
+              <p class="changelog-date">2026.05.26　v1.0.2</p>
+              <p class="changelog-text">ユニット差分の表示をアップデートしました。</p>
+              <p class="changelog-text">キャラクターデータの不具合を修正しました。</p>
+            </article>
+            <article class="changelog-item">
+              <p class="changelog-date">2026.05.24　v1.0.1</p>
               <p class="changelog-text">UIを調整しました。</p>
               <p class="changelog-text">ボタンクリック時の挙動などを修正しました。</p>
               <p class="changelog-text">ヘルプを追加し、遊び方と更新履歴をアプリ内で見られるようにしました。</p>
             </article>
             <article class="changelog-item">
-              <p class="changelog-date">2026.05.23 v1.0.0</p>
+              <p class="changelog-date">2026.05.23　v1.0.0</p>
               <p class="changelog-text">公開しました。</p>
             </article>
           </div>

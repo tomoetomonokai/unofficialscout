@@ -2,6 +2,7 @@
 [data-theme="light"] {
   --font-display: 'Fredoka', 'Trebuchet MS', sans-serif;
   --font-body: 'Plus Jakarta Sans', 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+  --font-eyeblow: 'Mehter World', sans-serif;
   --bg: #fff8ef;
   --bg-accent: #fff1cf;
   --surface: #fffdf8;
@@ -52,6 +53,11 @@
   --shadow-lg: 0 24px 46px rgba(0, 0, 0, 0.36);
   --success: #91e9b6;
   --error: #ff9bb1;
+}
+
+@font-face {
+  font-family: 'Mehter World';
+  src: url('/assets/fonts/mehter_world.otf') format('opentype');
 }
 
 * {
@@ -155,10 +161,11 @@ button {
 .eyebrow {
   margin: 0 0 var(--space-2);
   color: var(--secondary);
+  font-family: var(--font-eyeblow);
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  text-transform: lowercase;
 }
 
 h1,
@@ -214,41 +221,14 @@ h2 {
 
 .hero-side {
   display: grid;
-  align-content: start;
   gap: var(--space-4);
 }
 
-.utility-row {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .help-button {
   min-height: 44px;
   padding: 0 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface-2) 82%, var(--secondary-soft) 18%);
-  color: var(--text);
-  font-weight: 800;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition), background var(--transition), border-color var(--transition);
-}
-
-.help-button:hover,
-.help-button:focus-visible {
-  transform: translateY(-1px);
-  background: color-mix(in srgb, var(--surface-2) 65%, var(--secondary-soft) 35%);
-}
-
-.utility-row {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.help-button {
-  min-height: 44px;
-  padding: 0 16px;
+  margin-left: auto; 
+  margin-right: 10px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--surface-2) 82%, var(--secondary-soft) 18%);
@@ -755,10 +735,6 @@ body.modal-open {
 
   .hero-side {
     gap: 14px;
-  }
-
-  .utility-row {
-    justify-content: flex-start;
   }
 }
 
