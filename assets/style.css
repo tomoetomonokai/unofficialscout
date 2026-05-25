@@ -57,7 +57,7 @@
 
 @font-face {
   font-family: 'Mehter World';
-  src: url('/assets/fonts/mehter_world.otf') format('opentype');
+  src: url('./fonts/mehter_world.otf') format('opentype');
 }
 
 * {
@@ -163,7 +163,6 @@ button {
   color: var(--secondary);
   font-family: var(--font-eyeblow);
   font-size: 0.82rem;
-  font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: lowercase;
 }
