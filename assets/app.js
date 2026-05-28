@@ -1,8 +1,35 @@
 const SESSION_QUESTION_COUNT = 10;
+const DEFAULT_DIFFICULTY = 'easy';
+
+const HINT_GROUPS_BY_DIFFICULTY = {
+  easy: [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [9],
+    [10]
+  ],
+  normal: [
+    [2, 1, 0],
+    [4, 3, 5],
+    [6, 8],
+    [7],
+    [9, 10]
+  ],
+  hard: [
+    [7],
+    [6, 8],
+    [4, 5],
+    [3, 2, 1],
+    [0, 9, 10]
+  ]
+};
 
 const state = {
   quizData: [],
   nameMap: {},
+  hintLabels: [],
+  difficulty: DEFAULT_DIFFICULTY,
   sessionOrder: [],
   currentIndex: -1,
   currentQuestion: null,
@@ -77,10 +104,6 @@ function getSessionTotal() {
   return Math.min(state.quizData.length, SESSION_QUESTION_COUNT);
 }
 
-function getHintTotal() {
-  return state.currentQuestion?.hintGroups?.length ?? 0;
-}
-
 function getAccuracy() {
   return state.answered === 0 ? 0 : Math.round((state.correct / state.answered) * 1000) / 10;
 }
@@ -108,7 +131,7 @@ function scrollToHintsPanel() {
 function updateStats() {
   const total = getSessionTotal();
   const shown = state.hasStarted && total > 0 ? Math.min(state.currentIndex + 1, total) : 0;
-  const hintTotal = getHintTotal();
+  const hintTotal = getCurrentHintGroups().length;
   const revealed = state.currentQuestion ? Math.min(state.revealedGroups, hintTotal) : 0;
 
   els.progressChip.textContent = `${shown} / ${total} 連目`;
@@ -175,19 +198,34 @@ function renderResults() {
   `).join('');
 }
 
+function getCurrentHintGroups() {
+  return HINT_GROUPS_BY_DIFFICULTY[state.difficulty] ?? HINT_GROUPS_BY_DIFFICULTY[DEFAULT_DIFFICULTY];
+}
+
 function flattenHints(question, groupCount) {
-  return question.hintGroups.slice(0, groupCount).flat();
+  const hintGroups = getCurrentHintGroups();
+  return hintGroups
+    .slice(0, groupCount)
+    .flatMap((group) =>
+      group.map((hintIndex) => ({
+        label: state.hintLabels[hintIndex],
+        value: question.hints[hintIndex]
+      }))
+    )
+    .filter((hint) => hint.value !== undefined && hint.value !== null && hint.value !== '');
 }
 
 function renderHints() {
   const hints = flattenHints(state.currentQuestion, state.revealedGroups);
+  const hintTotal = getCurrentHintGroups().length;
+
   els.hintList.innerHTML = hints.map((hint) => `
     <article class="hint-card">
       <span class="hint-label">${escapeHtml(hint.label)}</span>
       <span class="hint-value">${escapeHtml(hint.value)}</span>
     </article>
   `).join('');
-  els.addHintBtn.disabled = state.locked || state.revealedGroups >= getHintTotal();
+  els.addHintBtn.disabled = state.locked || state.revealedGroups >= hintTotal;
   updateStats();
 }
 
@@ -281,7 +319,8 @@ function startSession() {
 }
 
 function addHint() {
-  if (state.locked || !state.currentQuestion || state.revealedGroups >= getHintTotal()) return;
+  const hintTotal = getCurrentHintGroups().length;
+  if (state.locked || !state.currentQuestion || state.revealedGroups >= hintTotal) return;
   state.revealedGroups += 1;
   renderHints();
 }
@@ -334,8 +373,36 @@ async function loadQuizData() {
     throw new Error(`HTTP ${response.status}`);
   }
   const data = await response.json();
+  validateQuizData(data);
   state.quizData = data.characters;
   state.nameMap = data.nameMap;
+  state.hintLabels = data.hintLabels;
+}
+
+function validateQuizData(data) {
+  if (!Array.isArray(data.hintLabels) || data.hintLabels.length === 0) {
+    throw new Error('hintLabels が未定義です。');
+  }
+
+  const maxHintIndex = Math.max(
+    ...Object.values(HINT_GROUPS_BY_DIFFICULTY).flat(2)
+  );
+
+  if (data.hintLabels.length <= maxHintIndex) {
+    throw new Error('hintLabels の件数が maxHintIndex に足りません。');
+  }
+
+  for (const character of data.characters) {
+    if (!Array.isArray(character.hints)) {
+      throw new Error(`${character.id}: hints が配列ではありません。`);
+    }
+
+    if (character.hints.length !== data.hintLabels.length) {
+      throw new Error(
+        `${character.id}: hints の件数 (${character.hints.length}) が hintLabels (${data.hintLabels.length}) と一致しません。`
+      );
+    }
+  }
 }
 
 function bindEvents() {
