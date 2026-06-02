@@ -5,23 +5,30 @@ const HINT_GROUPS_BY_DIFFICULTY = {
   easy: [
     [0, 1, 2],
     [3, 4, 5],
-    [6, 7, 8],
     [9],
+    [6, 7, 8],
     [10]
   ],
   normal: [
-    [2, 1, 0],
-    [4, 3, 5],
+    [4, 5],
     [6, 8],
-    [7],
+    [0, 1],
+    [2, 7],
     [9, 10]
   ],
   hard: [
+    [7, 8],
+    [4, 6],
+    [10],
+    [2, 5],
+    [9]
+  ],
+  expart: [
+    [10, 3],
     [7],
-    [6, 8],
-    [4, 5],
-    [3, 2, 1],
-    [0, 9, 10]
+    [8],
+    [9],
+    [6]
   ]
 };
 
@@ -45,6 +52,7 @@ const state = {
 const els = {
   hintList: document.getElementById('hintList'),
   answerSelect: document.getElementById('answerSelect'),
+  difficultySelect: document.getElementById('difficultySelect'),
   hintsPanel: document.querySelector('.hints-panel'),
   feedback: document.getElementById('feedback'),
   progressChip: document.getElementById('progressChip'),
@@ -83,7 +91,7 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
-function setTheme(theme = 'light') {
+function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
 }
 
@@ -154,6 +162,21 @@ function resetAnswerArea(message) {
   setFeedback(message, 'loading');
 }
 
+function syncDifficultyControl() {
+  if (!els.difficultySelect) return;
+  els.difficultySelect.value = state.difficulty;
+  els.difficultySelect.disabled = state.hasStarted;
+}
+
+function syncStartButtonState() {
+  const hasDifficulty = state.difficulty !== '';
+  els.startBtn.disabled = state.quizData.length === 0 || !hasDifficulty || state.hasStarted;
+}
+
+function syncRestartButtonState() {
+  els.restartBtn.disabled = !state.hasStarted && state.results.length === 0;
+}
+
 function enterStartScreen(message) {
   clearTimeout(state.nextTimer);
   state.currentIndex = -1;
@@ -164,11 +187,13 @@ function enterStartScreen(message) {
   state.locked = true;
   state.hasStarted = false;
   state.results = [];
+  state.difficulty = DEFAULT_DIFFICULTY;
   setTheme('light');
   renderIdleHints('スカウトできるキャラクターのヒントが表示されます。最大5回までヒントをもらうことができますよ。');
   resetAnswerArea(message);
   els.addHintBtn.disabled = true;
-  els.startBtn.disabled = state.quizData.length === 0;
+  syncDifficultyControl();
+  syncStartButtonState();
   updateStats();
   renderResults();
 }
@@ -265,6 +290,7 @@ function applyQuestionTheme(question) {
 function finishSession() {
   state.currentQuestion = null;
   state.locked = true;
+  state.hasStarted = false;
   els.hintList.innerHTML = `
     <article class="hint-card">
       <span class="hint-label">Scout Complete!</span>
@@ -275,6 +301,9 @@ function finishSession() {
   els.answerSelect.disabled = true;
   els.submitBtn.disabled = true;
   els.addHintBtn.disabled = true;
+  syncDifficultyControl();
+  syncStartButtonState();
+  syncRestartButtonState();
   setFeedback('スカウト完了です。もう一度挑戦するときは「もう一度やり直す」をクリックしてください。', 'done', true);
   updateStats();
 }
@@ -302,8 +331,14 @@ function nextQuestion() {
 
 function startSession() {
   if (state.quizData.length === 0 || state.hasStarted) return;
+  if (!state.difficulty) {
+    setFeedback('難易度を選択してからクイズを始めてください。', 'error');
+    els.difficultySelect?.focus();
+    return;
+  }
   clearTimeout(state.nextTimer);
   state.hasStarted = true;
+  syncDifficultyControl();
   state.sessionOrder = shuffle(state.quizData.map((_, index) => index)).slice(0, Math.min(state.quizData.length, SESSION_QUESTION_COUNT));
   state.currentIndex = -1;
   state.currentQuestion = null;
@@ -312,7 +347,8 @@ function startSession() {
   state.correct = 0;
   state.results = [];
   state.locked = true;
-  els.startBtn.disabled = true;
+  syncStartButtonState();
+  syncRestartButtonState();
   renderResults();
   updateStats();
   nextQuestion();
@@ -356,11 +392,7 @@ function submitAnswer() {
     setFeedback(`残念！ 不正解です。正解は ${answerName} でした。`, 'error', true);
   }
 
-  state.results.unshift({
-    answerName,
-    isCorrect,
-    //message: isCorrect ? 'ユーザー回答: 正解' : 'ユーザー回答: 不正解'
-  });
+  state.results.unshift({ answerName, isCorrect, });
   renderResults();
   updateStats();
   scheduleNext(isCorrect ? 1350 : 1750);
@@ -409,8 +441,21 @@ function bindEvents() {
   els.addHintBtn.addEventListener('click', addHint);
   els.submitBtn.addEventListener('click', submitAnswer);
   els.startBtn.addEventListener('click', startSession);
+  els.difficultySelect?.addEventListener('change', (event) => {
+    state.difficulty = event.target.value;
+    syncStartButtonState();
+
+    if (!state.hasStarted) {
+      setFeedback(
+        state.difficulty
+          ? `難易度「${event.target.options[event.target.selectedIndex].text}」を選択しました。「スカウトを始める」ボタンをクリックしてください。`
+          : '難易度を選択してからクイズを始めてください。',
+        state.difficulty ? 'loading' : 'error'
+      );
+    }
+  });
   els.restartBtn.addEventListener('click', () => {
-    enterStartScreen('スカウト開始画面に戻りました。「スカウトを始める」をクリックしてください。');
+    enterStartScreen('スカウト開始画面に戻りました。お姉さんのご機嫌（難易度）を設定してください。');
   });
   els.helpBtn.addEventListener('click', openHelpModal);
   els.closeHelpBtn.addEventListener('click', closeHelpModal);
@@ -429,12 +474,12 @@ function bindEvents() {
 async function init() {
   setTheme('light');
   bindEvents();
-  renderResults();
-  enterStartScreen();
+  enterStartScreen('データを読み込んでいます。');
 
   try {
     await loadQuizData();
-    enterStartScreen('スカウトを始めると4人の候補者を読み込みます。');
+    enterStartScreen('お姉さんのご機嫌（難易度）を設定してください。');
+    syncStartButtonState();
   } catch (error) {
     console.error(error);
     els.startBtn.disabled = true;

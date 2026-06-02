@@ -18,7 +18,7 @@
   --shadow-sm: 0 8px 18px rgba(201, 131, 85, 0.08);
   --shadow-lg: 0 22px 44px rgba(201, 131, 85, 0.14);
   --success: #2f9c61;
-  --error: #d94e63;
+  --error: #c2646d;
   --radius-xl: 28px;
   --radius-lg: 20px;
   --radius-md: 16px;
@@ -169,7 +169,7 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(2.2rem, 7vw, 2rem);
+  font-size: clamp(1.8rem, 7vw, 2.2rem);
 }
 
 h2 {
@@ -183,18 +183,38 @@ h2 {
   font-size: clamp(1rem, 2.3vw, 1.06rem);
 }
 
-.hero-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+.hero-controls {
   margin-top: var(--space-6);
+  width: min(340px, 100%);
+}
+
+.hero-select-wrap,
+.select-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.hero-select-wrap::after,
+.select-wrap::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid color-mix(in srgb, var(--text) 62%, transparent 38%);
+  border-bottom: 2px solid color-mix(in srgb, var(--text) 62%, transparent 38%);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+  transition: transform var(--transition), border-color var(--transition), opacity var(--transition);
+  opacity: 0.82;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: var(--space-6);
+  margin-top: var(--space-4);
 }
 
 .chip,
@@ -258,34 +278,6 @@ h2 {
   color: var(--text);
   font-size: 0.95rem;
   font-weight: 700;
-}
-
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.stat-card {
-  padding: 16px 14px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--surface-2), var(--surface));
-  border: 1px solid var(--border);
-}
-
-.stat-label {
-  display: block;
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.stat-value {
-  display: block;
-  margin-top: 8px;
-  font-size: clamp(1.3rem, 4vw, 2rem);
-  font-weight: 800;
-  font-variant-numeric: tabular-nums lining-nums;
 }
 
 .board {
@@ -355,21 +347,123 @@ h2 {
   color: var(--text-muted);
 }
 
-.select-input,
 .primary-button,
 .secondary-button {
   min-height: 52px;
   padding: 0 16px;
   border-radius: 16px;
   border: 1px solid var(--border);
-  transition: transform var(--transition), background var(--transition), border-color var(--transition), color var(--transition), opacity var(--transition), box-shadow var(--transition);
+  transition:
+    transform var(--transition),
+    background var(--transition),
+    border-color var(--transition),
+    color var(--transition),
+    opacity var(--transition),
+    box-shadow var(--transition);
 }
 
 .select-input {
   width: 100%;
-  background: var(--surface-2);
+  min-height: 58px;
+  padding: 0 52px 0 18px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, var(--secondary) 28%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--secondary-soft) 68%, var(--surface) 32%),
+      color-mix(in srgb, var(--surface) 84%, var(--secondary-soft) 16%)
+    );
   color: var(--text);
   appearance: none;
+  -webkit-appearance: none;
+  color-scheme: light;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 38%, transparent 62%),
+    0 10px 22px color-mix(in srgb, var(--secondary) 10%, transparent 90%);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  transition:
+    transform var(--transition),
+    background var(--transition),
+    border-color var(--transition),
+    color var(--transition),
+    opacity var(--transition),
+    box-shadow var(--transition);
+}
+
+.select-input--hero {
+  min-height: 38px;
+  font-size: 0.98rem;
+}
+
+.select-input:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--secondary) 36%, var(--border) 64%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface-2) 78%, white 22%),
+      color-mix(in srgb, var(--surface) 70%, var(--secondary-soft) 30%)
+    );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 44%, transparent 56%),
+    0 14px 26px color-mix(in srgb, var(--secondary) 14%, transparent 86%);
+}
+
+.select-input:focus-visible {
+  outline: none;
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--secondary) 54%, var(--border) 46%);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--secondary) 18%, transparent 82%),
+    0 14px 28px color-mix(in srgb, var(--secondary) 16%, transparent 84%);
+}
+
+.select-input:invalid {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.select-input option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+[data-theme="dark"] .select-input {
+  color-scheme: dark;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--surface-2) 90%, white 2%),
+      color-mix(in srgb, var(--surface) 84%, var(--secondary-soft) 16%)
+    );
+  color: var(--text);
+}
+
+[data-theme="dark"] .select-input option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.select-input:disabled {
+  background: color-mix(in srgb, var(--surface-2) 86%, var(--text-muted) 14%);
+  color: var(--text-muted);
+  border-color: color-mix(in srgb, var(--border) 82%, transparent 18%);
+  box-shadow: none;
+}
+
+.hero-select-wrap:has(.select-input:disabled)::after,
+.select-wrap:has(.select-input:disabled)::after {
+  opacity: 0.45;
+}
+
+.select-input:focus-visible + .select-caret,
+.hero-select-wrap:focus-within::after,
+.select-wrap:focus-within::after {
+  transform: translateY(-62%) rotate(45deg);
+  border-color: color-mix(in srgb, var(--secondary) 70%, white 30%);
+  opacity: 1;
 }
 
 .primary-button {
@@ -741,15 +835,6 @@ body.modal-open {
     align-items: center;
   }
 
-  .modal-dialog {
-    padding: 16px;
-    border-radius: 24px;
-  }
-
-  .modal-header {
-    align-items: center;
-  }
-
   .shell {
     width: min(100%, calc(100% - 16px));
     padding-top: 16px;
@@ -763,10 +848,17 @@ body.modal-open {
     border-radius: 24px;
   }
 
-  .hero-chips,
   .hero-actions {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .hero-controls {
+    width: 100%;
+  }
+
+  .select-input--hero {
+    min-height: 56px;
   }
 
   .stat-grid {

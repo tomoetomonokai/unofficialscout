@@ -4,11 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Merc Storia Unofficial Character Quiz</title>
-  <meta name="description" content="メルクストーリアのユニットを当てるクイズアプリ。非公式ファンサイト。" />
+  
+  <meta property="og:title" content="メルクストーリア 非公式の紹介所" />
+  <meta property="og:description" content="メルクストーリアのユニットを当てるクイズアプリ。非公式ファンサイト。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://tomoetomonokai.github.io/unofficialscout/" />
+  <meta property="og:image" content="https://tomoetomonokai.github.io/unofficialscout/assets/img/thumbnail.png" />
+  <meta property="og:site_name" content="メルクストーリア 非公式の紹介所" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="メルクストーリア 非公式の紹介所" />
+  <meta name="twitter:description" content="メルクストーリアのユニットを当てるクイズアプリ。非公式ファンサイト。" />
+  <meta name="twitter:image" content="https://tomoetomonokai.github.io/unofficialscout/assets/img/thumbnail.png" />
+
+  <meta name="description" content="" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./assets/style.css" />
+  <link rel="icon" href="https://tomoetomonokai.github.io/unofficialscout/assets/img/favicon.ico">
 </head>
 <body>
   <a class="skip-link" href="#main">メインへスキップ</a>
@@ -23,6 +36,16 @@
         <p class="eyebrow">Merc Storia Unofficial Character Quiz</p>
         <h1>メルクストーリア 非公式の紹介所</h1>
         <p class="hero-text">旅の仲間を求めて紹介所を訪れたあなた。しかしスカウトレターには肝心の名前が書かれていなかった！ ヒントを頼りに、無事仲間をスカウトしてください。</p>
+        <div class="hero-controls">
+          <div class="select-wrap hero-select-wrap">
+            <select id="difficultySelect" class="select-input select-input--hero" aria-label="難易度を選択" required>
+              <option value="easy" selected>ふつう</option>
+              <option value="normal">ムズ</option>
+              <option value="hard">激ムズ</option>
+              <option value="expart">修羅ムズ</option>
+            </select>
+          </div>
+        </div>
         <div class="hero-actions">
           <button class="primary-button start-button" id="startBtn" type="button">スカウト × 10 を始める</button>
           <button class="secondary-button" id="restartBtn" type="button">もう一度やり直す</button>
@@ -113,7 +136,8 @@
           <h3>遊び方</h3>
           <ol class="help-list">
             <li>スカウトレターをわたすキャラクターをヒントをもとに選んで仲間を増やしましょう。</li>
-            <li>「スカウト × 10 を始める」を押すと、最初のキャラクターのヒント3件が表示され、スカウト候補を4人から選べるようになります。</li>
+            <li>最初に紹介所のお姉さんのご機嫌（難易度）を選んでください。ご機嫌が悪いとヒントがあまりもらえないかも。</li>
+            <li>「スカウト × 10 を始める」を押すと、最初のキャラクターのヒントが表示され、スカウト候補を4人から選べるようになります。</li>
             <li>「次のヒントをもらう」をクリックすると、最大5段階まで情報を増やせます。</li>
             <li>正しいキャラクター名を選んで「スカウトする」を押すと、正誤判定後に自動で次のスカウトへ進みます。</li>
             <li>10人のキャラクターをスカウトできます。スカウト履歴は「あなたのパーティ」欄に追加されていきます。</li>
@@ -139,6 +163,12 @@
           <h3>更新履歴</h3>
           <div class="changelog-list">
             <article class="changelog-item">
+              <p class="changelog-date">2026.06.01　v1.1.0</p>
+              <p class="changelog-text">難易度設定機能を追加しました。</p>
+              <p class="changelog-text">「ひとこと」のヒントでキャラを特定できないようにしました。</p>
+              <p class="changelog-text">テキストの誤りを修正しました。</p>
+            </article>
+            <article class="changelog-item">
               <p class="changelog-date">2026.05.29　v1.0.3</p>
               <p class="changelog-text">キャラクター選択肢の選出アルゴリズムを改善しました。</p>
             </article>
@@ -158,7 +188,6 @@
               <p class="changelog-text">公開しました。</p>
             </article>
           </div>
-          <!-- 更新履歴を増やすときは changelog-item を追加してください。 -->
         </section>
       </div>
     </section>
